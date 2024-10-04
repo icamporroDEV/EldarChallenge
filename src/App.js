@@ -6,10 +6,12 @@ import { Home } from './pages/Home';
 import RegisterForm from './pages/RegisterForm';
 import { AuthProvider } from './context/AuthContext';
 import LoginForm from './pages/LoginForm';
+import UserProfile from './pages/UserProfile';
 
 const App = () => {
   return (
     <AuthProvider>
+
       <Router>
         <Routes>
           <Route path="/register" element={<RegisterForm />} />
@@ -23,8 +25,17 @@ const App = () => {
               </PrivateRoute>
             }
           />
+            <Route
+            path="/user"
+            element={
+              <PrivateRoute>
+                <UserProfile />
+              </PrivateRoute>
+            }
+          />
         </Routes>
       </Router>
+ 
     </AuthProvider>
   );
 };
