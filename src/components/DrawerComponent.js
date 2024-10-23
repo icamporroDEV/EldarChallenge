@@ -13,7 +13,7 @@ export const DrawerComponent = () => {
   const navigate = useNavigate();
   const user = useAuth();
   const [open, setOpen] = useState(false);
-  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery((theme) => theme.breakpoints.down('lg'));
   const drawerWidth = 150;
 
   const toggleDrawer = (open) => () => {

@@ -38,8 +38,8 @@ export const AppBarStyled = styled(NSAppBar)(() => ({
       paddingRight:'0px',
       borderRadius:'8px',
     '&:hover': {
-      backgroundColor: 'white', // Color when hovered
-      transition: 'background-color 0.3s ease', // Smooth transition effect
+      backgroundColor: 'white', 
+      transition: 'background-color 0.3s ease',
       color:'black'
     },
     cursor: 'pointer',

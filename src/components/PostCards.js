@@ -1,7 +1,7 @@
 import {  Button,  Tooltip } from '@mui/material';
 import { Grid } from '@mui/system';
 import React from 'react';
-import { CardBody, CardButtonsBox, CardContentBox, CardIconBox, CardStyled, CardTitle, CardTitleBox } from '../styles/Home.styled';
+import { CardBody, CardButtonsBox, CardContentBox, CardGrid, CardIconBox, CardStyled, CardTitle, CardTitleBox } from '../styles/Home.styled';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { Link } from 'react-router-dom'; 
@@ -10,7 +10,7 @@ export const PostCards = ({ data, user, loading, handleOpen, handleOpenDelete })
   return (
     <Grid container spacing={3} mt={3}>
       {data?.map(post => (
-        <Grid item xs={12} sm={6} md={4} key={post?.id}>
+        <CardGrid item xs={12} sm={6} md={4} key={post?.id} >
       
           <CardStyled>
             <CardContentBox>
@@ -45,7 +45,7 @@ export const PostCards = ({ data, user, loading, handleOpen, handleOpenDelete })
             </CardContentBox>
           </CardStyled>
       
-        </Grid>
+        </CardGrid>
       ))}
     </Grid>
   );

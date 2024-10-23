@@ -8,6 +8,7 @@ import {
   Drawer as NSDrawer,
   TableHead as NSTableHead,
   Card as NSCard,
+  Grid as NSGrid,
   Paper as NSPaper
 } from '@mui/material';
 
@@ -34,6 +35,9 @@ export const AppBarStyled = styled(NSAppBar)(() => ({
       backgroundColor: '#F5F5F5',
       padding:'25px',
       marginLeft: `160px`, 
+      [theme.breakpoints.down('lg')]: {
+        marginLeft: 'auto',   
+      },
       [theme.breakpoints.down('sm')]: {
         marginLeft: 0,   
         padding: '10px',
@@ -95,10 +99,17 @@ export const AppBarStyled = styled(NSAppBar)(() => ({
   export const PostsTitle = styled(NSTypography)(() => ({
     paddingBottom:'15px',
     marginTop:'20px',
+    marginLeft:'15px',
     fontSize:'36px',
     fontWeight:600
  
    }));
+   export const CardGrid = styled(NSGrid)(({theme}) => ({
+  margin:'auto',
+    [theme.breakpoints.down('sm')]: {
+      height:'350px'
+    },
+  }));
    export const CardStyled = styled(NSCard)(({theme}) => ({
     width: '83.5vw',
     height: '150px',
@@ -107,6 +118,10 @@ export const AppBarStyled = styled(NSAppBar)(() => ({
     '&:hover': { 
       boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)', 
       cursor:'pointer'
+    },
+    [theme.breakpoints.down('md')]: {
+      marginLeft: 0,   
+      height:'250px'
     },
     [theme.breakpoints.down('sm')]: {
       marginLeft: 0,   
