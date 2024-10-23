@@ -1,21 +1,32 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 
-// Crear el contexto de autenticación
 const AuthContext = createContext();
 
-// Proveedor de contexto
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
-  const login = () => setIsAuthenticated(true);
-  const logout = () => setIsAuthenticated(false);
+  const login = (userData) => {
+    setUser(userData);
+    localStorage.setItem('userData', JSON.stringify(userData));
+  };
+
+  const logout = () => {
+    setUser(null);
+    localStorage.removeItem('userData');
+  };
+
+  useEffect(() => {
+    const savedUser = localStorage.getItem('userData');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser)); 
+    }
+  }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-// Hook para usar el contexto de autenticación
 export const useAuth = () => useContext(AuthContext);

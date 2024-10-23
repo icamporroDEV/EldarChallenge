@@ -1,92 +1,118 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../api/api';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
+import { useSnackbar } from '../context/SnackbarContext'; 
 import {
-  TextField,
-  Button,
-  Typography,
-  Box,
-  Alert,
-} from '@mui/material';
+  FormContainer,
+  LoginButton,
+  LoginFormBox,
+  LoginFormContainer,
+  LoginRoot,
+  LoginTextField,
+  LoginTitle,
+} from '../styles/Login.styled';
+
+const validationSchema = Yup.object().shape({
+  email: Yup.string().required('Campo obligatorio'),
+  password: Yup.string()
+    .min(6, 'La contraseña debe tener al menos 6 caracteres')
+    .required('La contraseña es obligatoria'),
+});
 
 const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
-  const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await loginUser(email, password);
-      if (response) {
-        const userData = {
-          accessToken: response.accessToken,
-          refreshToken: response.refreshToken,
-          nombre: response.nombre, 
-          sexo: response.sexo, 
-          email: response.email, 
-          userId:response.userId
-        };
-        localStorage.setItem('userData', JSON.stringify(userData));
-        login(); 
-        navigate('/home');
-      }
-    } catch (error) {
-      setMessage('Error: ' + (error.response?.data || 'Unknown error'));
-      setIsError(true);
-    }
-  };
+  const showSnackbar = useSnackbar(); 
 
   return (
-    <Box
-      component="form"
-      onSubmit={handleLogin}
-      sx={{
-        width: '300px',
-        margin: 'auto',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 2,
-        mt: 5,
-      }}
-    >
-      <Typography variant="h4" component="h2" align="center">
-        Login
-      </Typography>
+    <LoginRoot>
+      <LoginFormBox>
+        <LoginFormContainer>
+          <LoginTitle align="center">Iniciar Sesión</LoginTitle>
 
-      {isError && (
-        <Alert severity="error">
-          {message}
-        </Alert>
-      )}
+          <Formik
+            initialValues={{ email: '', password: '' }}
+            validationSchema={validationSchema}
+            onSubmit={async (values, { setSubmitting, setErrors }) => {
+              try {
+                const response = await loginUser(values.email, values.password);
+                if (response) {
+                  const userData = {
+                    accessToken: response.accessToken,
+                    refreshToken: response.refreshToken,
+                    nombre: response.nombre,
+                    email: response.email,
+                    role: response.role,
+                    userId: response.userId,
+                  };
+                  localStorage.setItem('userData', JSON.stringify(userData));
+                  login(userData);
 
-      <TextField
-        label="Email"
-        variant="outlined"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        fullWidth
-      />
+                  showSnackbar('Bienvenido '+ response.nombre, 'success'); 
+                  navigate('/home');
+                }
+              } catch (error) {
+                setErrors({
+                  submit: 'Error: ' + (error.message || 'Credenciales inválidas'),
+                });
+                showSnackbar(
+                  'Error: ' + (error.message || 'Credenciales inválidas'),
+                  'error'
+                ); 
+              } finally {
+                setSubmitting(false);
+              }
+            }}
+          >
+            {({ isSubmitting, errors }) => (
+              <Form>
+                <FormContainer>
+                  <Field name="email">
+                    {({ field, form }) => (
+                      <LoginTextField
+                        variant="standard"
+                        {...field}
+                        label="Email"
+                        error={form.touched.email && Boolean(form.errors.email)}
+                        helperText={<ErrorMessage name="email" />}
+                        required
+                        fullWidth
+                      />
+                    )}
+                  </Field>
 
-      <TextField
-        label="Password"
-        variant="outlined"
-        type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        fullWidth
-      />
+                  <Field name="password">
+                    {({ field, form }) => (
+                      <LoginTextField
+                        variant="standard"
+                        type="password"
+                        {...field}
+                        label="Contraseña"
+                        error={form.touched.password && Boolean(form.errors.password)}
+                        helperText={<ErrorMessage name="password" />}
+                        required
+                        fullWidth
+                      />
+                    )}
+                  </Field>
 
-      <Button type="submit" variant="contained" color="primary" fullWidth>
-        Login
-      </Button>
-    </Box>
+                  {Boolean(errors.submit) && (
+                    <div>{errors.submit}</div> 
+                  )}
+
+                  <LoginButton type="submit" variant="contained" fullWidth disabled={isSubmitting}>
+                    {isSubmitting ? 'Cargando...' : 'Iniciar Sesión'}
+                  </LoginButton>
+                </FormContainer>
+              </Form>
+            )}
+          </Formik>
+        </LoginFormContainer>
+      </LoginFormBox>
+    </LoginRoot>
   );
 };
 
