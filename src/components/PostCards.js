@@ -14,7 +14,7 @@ export const PostCards = ({ data, user, loading, handleOpen, handleOpenDelete })
       
           <CardStyled>
             <CardContentBox>
-            <Link to={`/posts/${post.id}/comments`} style={{ textDecoration: 'none' }}>
+            <Link to={`/posts/${post.id}/comments`} style={{ textDecoration: 'none',width:'100%' }}>
               <CardTitleBox>
                 <CardTitle>{post?.title}</CardTitle>
                 <CardBody>
