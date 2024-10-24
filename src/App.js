@@ -53,16 +53,6 @@ const App = () => {
                 </PrivateRoute>
               }
             />
-            {/* <Route
-              path="/photos"
-              element={
-                <PrivateRoute>
-                  <PrivateLayout>
-                    <Photos />
-                  </PrivateLayout>
-                </PrivateRoute>
-              }
-            /> */}
             <Route
               path="/posts/:id/comments"
               element={
