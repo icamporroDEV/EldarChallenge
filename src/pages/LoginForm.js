@@ -1,10 +1,6 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { loginUser } from '../api/api';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { useSnackbar } from '../context/SnackbarContext'; 
 import {
   FormContainer,
   LoginButton,
@@ -14,6 +10,7 @@ import {
   LoginTextField,
   LoginTitle,
 } from '../styles/Login.styled';
+import useLogin from '../customHooks/useLogin';
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required('Campo obligatorio'),
@@ -23,9 +20,7 @@ const validationSchema = Yup.object().shape({
 });
 
 const LoginForm = () => {
-  const navigate = useNavigate();
-  const { login } = useAuth();
-  const showSnackbar = useSnackbar(); 
+  const { handleLoginSubmit, isSubmitting } = useLogin(); 
 
   return (
     <LoginRoot>
@@ -36,38 +31,9 @@ const LoginForm = () => {
           <Formik
             initialValues={{ email: '', password: '' }}
             validationSchema={validationSchema}
-            onSubmit={async (values, { setSubmitting, setErrors }) => {
-              try {
-                const response = await loginUser(values.email, values.password);
-                if (response) {
-                  const userData = {
-                    accessToken: response.accessToken,
-                    refreshToken: response.refreshToken,
-                    nombre: response.nombre,
-                    email: response.email,
-                    role: response.role,
-                    userId: response.userId,
-                  };
-                  localStorage.setItem('userData', JSON.stringify(userData));
-                  login(userData);
-
-                  showSnackbar('Bienvenido '+ response.nombre, 'success'); 
-                  navigate('/home');
-                }
-              } catch (error) {
-                setErrors({
-                  submit: 'Error: ' + (error.message || 'Credenciales inválidas'),
-                });
-                showSnackbar(
-                  'Error: ' + (error.message || 'Credenciales inválidas'),
-                  'error'
-                ); 
-              } finally {
-                setSubmitting(false);
-              }
-            }}
+            onSubmit={(values, { setErrors }) => handleLoginSubmit(values, setErrors)}
           >
-            {({ isSubmitting, errors }) => (
+            {({ errors }) => (
               <Form>
                 <FormContainer>
                   <Field name="email">
@@ -99,9 +65,7 @@ const LoginForm = () => {
                     )}
                   </Field>
 
-                  {Boolean(errors.submit) && (
-                    <div>{errors.submit}</div> 
-                  )}
+                  {Boolean(errors.submit) && <div>{errors.submit}</div>}
 
                   <LoginButton type="submit" variant="contained" fullWidth disabled={isSubmitting}>
                     {isSubmitting ? 'Cargando...' : 'Iniciar Sesión'}
